@@ -1,0 +1,38 @@
+name: Terraform Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: v1.5.6
+
+      - name: Initialize terraform
+        run: terraform init
+        working-directory: module_file/
+
+      - name: Plan Terraform changes
+        run: terraform plan 
+        working-directory: module_file/
+
+      - name: Apply Terraform changes
+        run: terraform apply -auto-approve
+        working-directory: module_file/
+      
